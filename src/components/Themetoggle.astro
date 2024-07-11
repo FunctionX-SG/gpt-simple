@@ -55,6 +55,7 @@
 const themeToggle = document.getElementById('themeToggle')
 const themeCircle1 = document.querySelector('.theme_toggle_circle1')
 const themeCircle2 = document.querySelector('.theme_toggle_circle2')
+
 const toogleThemeCircle = () => {
   const darkMode = document.documentElement.classList.contains('dark') ?? localStorage.getItem('theme') === 'dark'
   if (darkMode) {
@@ -83,6 +84,8 @@ const handleToggleClick = () => {
   const isDark = element.classList.contains('dark')
   localStorage.setItem('theme', isDark ? 'dark' : 'light')
   toogleThemeCircle()
+  window.dispatchEvent(new Event('themeChange')); // Dispatch custom event
 }
+
 themeToggle.addEventListener('click', handleToggleClick)
 </script>

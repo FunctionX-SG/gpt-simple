@@ -231,12 +231,12 @@ export default () => {
       { currentError() && <ErrorMessageItem data={currentError()} onRetry={retryLastFetch} /> }
       <Show
         when={!loading()}
-        fallback={() => (
+        fallback={
           <div class="gen-cb-wrapper">
             <span>AI is thinking...</span>
             <div class="gen-cb-stop" onClick={stopStreamFetch}>Stop</div>
           </div>
-        )}
+        }
       >
         <div class="gen-text-wrapper" class:op-50={systemRoleEditing()}>
           <textarea
