@@ -22,6 +22,10 @@ export default (props: Props) => {
     props.setSystemRoleEditing(false)
   }
 
+  const handleCancel = () => {
+    props.setSystemRoleEditing(false)
+  }
+
   createEffect(() => {
     props.temperatureSetting(temperature())
   })
@@ -35,7 +39,7 @@ export default (props: Props) => {
               <Show when={props.canEdit()} fallback={<IconEnv />}>
                 <span onClick={() => props.setCurrentSystemRoleSettings('')} class="sys-edit-btn p-1 rd-50%" > <IconX /> </span>
               </Show>
-              <span>System Role ( Temp = {temperature()} ) : </span>
+              <span>AI Context ( Temp = {temperature()} ) : </span>
             </div>
             <div class="mt-1">
               {props.currentSystemRoleSettings()}
@@ -45,7 +49,7 @@ export default (props: Props) => {
         <Show when={!props.currentSystemRoleSettings() && props.canEdit()}>
           <span onClick={() => props.setSystemRoleEditing(!props.systemRoleEditing())} class="sys-edit-btn">
             <IconEnv />
-            <span>Add System Role</span>
+            <span>Add AI Context</span>
           </span>
         </Show>
       </Show>
@@ -53,13 +57,13 @@ export default (props: Props) => {
         <div>
           <div class="fi gap-1 op-50 dark:op-60">
             <IconEnv />
-            <span>System Role:</span>
+            <span>AI Context:</span>
           </div>
-          <p class="my-2 leading-normal text-sm op-50 dark:op-60">Gently instruct the assistant and set the behavior of the assistant.</p>
+          <p class="my-2 leading-normal text-sm op-50 dark:op-60">Provide a context to tune the AI</p>
           <div>
             <textarea
               ref={systemInputRef!}
-              placeholder="You are a helpful assistant, answer as concisely as possible...."
+              placeholder="Provide helpful and concise answers as an assistant"
               autocomplete="off"
               autofocus
               rows="3"
@@ -67,7 +71,10 @@ export default (props: Props) => {
             />
           </div>
           <div class="w-full fi fb">
-            <button onClick={handleButtonClick} gen-slate-btn>
+            <button onClick={handleCancel} gen-slate-btn>
+              Cancel
+            </button>
+            <button onClick={handleButtonClick} class="ml-1" gen-slate-btn>
               Set
             </button>
             <div class="w-full ml-2">
