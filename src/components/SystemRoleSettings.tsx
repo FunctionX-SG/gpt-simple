@@ -83,7 +83,7 @@ export default (props: Props) => {
                   name: 'Temperature',
                   type: 'slider',
                   min: 0,
-                  max: 2,
+                  max: 1,
                   step: 0.01,
                 }}
                 editing={() => true}

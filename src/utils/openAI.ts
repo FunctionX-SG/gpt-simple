@@ -2,26 +2,37 @@ import { createParser } from 'eventsource-parser'
 import type { ParsedEvent, ReconnectInterval } from 'eventsource-parser'
 import type { ChatMessage } from '@/types'
 
-export const model = import.meta.env.OPENAI_API_MODEL || 'gpt-3.5-turbo'
+export const model = import.meta.env.OPENAI_API_MODEL || 'gpt-4o'
 
 export const generatePayload = (
   apiKey: string,
   messages: ChatMessage[],
   temperature: number,
-): RequestInit & { dispatcher?: any } => ({
-  headers: {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${apiKey}`,
-  },
-  method: 'POST',
-  body: JSON.stringify({
-    model,
-    messages,
-    temperature,
-    stream: true,
-  }),
-})
+): RequestInit & { dispatcher?: any } => {
+  return {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`,
+    },
+    method: 'POST',
+    body: JSON.stringify({
+      model,
+      messages,
+      temperature,
+      stream: true,
+    }),
+  };
+}
 
+/// OpenAI's returned chunk is not in complete JSON so we need to use `eventsource-parser`
+/// to parse the chunk
+/// Example (`event`):
+/// {
+///   type: 'event',
+///   id: undefined,
+///   event: undefined,
+///   data: '{"id":"chatcmpl-9o1QXS0cSpxLegVR9gKnd24dl6qgQ","object":"chat.completion.chunk","created":1721708913,"model":"gpt-4o-2024-05-13","system_fingerprint":"fp_400f27fa1f","choices":[{"index":0,"delta":{},"logprobs":null,"finish_reason":"stop"}]}'
+/// }
 export const parseOpenAIStream = (rawResponse: Response) => {
   const encoder = new TextEncoder()
   const decoder = new TextDecoder()
@@ -36,6 +47,7 @@ export const parseOpenAIStream = (rawResponse: Response) => {
     async start(controller) {
       const streamParser = (event: ParsedEvent | ReconnectInterval) => {
         if (event.type === 'event') {
+          console.log(event)
           const data = event.data
           if (data === '[DONE]') {
             controller.close()
@@ -54,6 +66,8 @@ export const parseOpenAIStream = (rawResponse: Response) => {
             const json = JSON.parse(data)
             const text = json.choices[0].delta?.content || ''
             const queue = encoder.encode(text)
+            console.log("OpenAI queue")
+            console.log(queue)
             controller.enqueue(queue)
           } catch (e) {
             controller.error(e)

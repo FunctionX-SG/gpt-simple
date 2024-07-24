@@ -70,7 +70,8 @@ export default () => {
         content: inputValue,
       },
     ])
-    requestWithLatestMessage()
+    // requestWithLatestMessage()
+    requestWithLatestMessageOllama()
     instantToBottom()
   }
 
@@ -81,7 +82,8 @@ export default () => {
   const instantToBottom = () => {
     window.scrollTo({ top: document.body.scrollHeight, behavior: 'instant' })
   }
-
+  
+  /// Request to OpenAI
   const requestWithLatestMessage = async() => {
     setLoading(true)
     setCurrentAssistantMessage('')
@@ -150,6 +152,74 @@ export default () => {
     isStick() && instantToBottom()
   }
 
+  /// Request to Ollama (Llama-cpp)
+  const requestWithLatestMessageOllama = async () => {
+    setLoading(true);
+    setCurrentAssistantMessage('');
+    setCurrentError(null);
+    const storagePassword = localStorage.getItem('pass');
+    try {
+      const controller = new AbortController();
+      setController(controller);
+
+      const requestMessageList = messageList().slice(-maxHistoryMessages);
+      if (currentSystemRoleSettings()) {
+        requestMessageList.unshift({
+          role: 'system',
+          content: currentSystemRoleSettings(),
+        });
+      }
+      
+      const timestamp = Date.now();
+      const response = await fetch('/api/generateOllama', {
+        method: 'POST',
+        body: JSON.stringify({
+          messages: requestMessageList,
+          time: timestamp,
+          pass: storagePassword,
+          sign: await generateSignature({
+            t: timestamp,
+            m: requestMessageList?.[requestMessageList.length - 1]?.content || '',
+          }),
+          temperature: temperature(),
+        }),
+        signal: controller.signal,
+      });
+      if (!response.ok) {
+        const error = await response.json()
+        console.error(error.error)
+        setCurrentError(error.error)
+        throw new Error('Request failed')
+      }
+      
+      const readableStream = response.body;
+      if (!readableStream) throw new Error("No data");
+
+      const reader = readableStream.getReader();
+      const decoder = new TextDecoder("utf-8");
+      let result = '';
+      let done = false;
+      while (!done) {
+        const { done: readerDone, value } = await reader.read();
+        if (value) {
+          const content = decoder.decode(value);
+          if (content) {
+            setCurrentAssistantMessage(currentAssistantMessage() + content);
+          }
+          isStick() && instantToBottom();
+        }
+        done = readerDone;
+      }
+    } catch (e) {
+      console.error(e)
+      setLoading(false)
+      setController(null)
+      return
+    }
+    archiveCurrentMessage()
+    isStick() && instantToBottom()
+  }
+
   const archiveCurrentMessage = () => {
     if (currentAssistantMessage()) {
       setMessageList([
@@ -188,7 +258,8 @@ export default () => {
       const lastMessage = messageList()[messageList().length - 1]
       if (lastMessage.role === 'assistant')
         setMessageList(messageList().slice(0, -1))
-      requestWithLatestMessage()
+      // requestWithLatestMessage()
+      requestWithLatestMessageOllama()
     }
   }
 
