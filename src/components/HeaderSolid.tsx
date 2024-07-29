@@ -43,10 +43,10 @@ export default () => {
                 
             </div>
             <div class="fi mt-2">
-                <span class="gpt-title">ChatGPT</span>
+                <span class="gpt-title">LLaMA3.1-Chat</span>
                 <span class="gpt-subtitle">Demo</span>
             </div>
-        <p mt-1 op-60>Based on OpenAI API ({model}).</p>
+        {/* <p mt-1 op-60>Based on OpenAI API ({model}).</p> */}
         </header>
     )
 }
