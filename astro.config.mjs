@@ -42,7 +42,7 @@ export default defineConfig({
             type: 'image/png',
           },
           {
-            src: 'icon.svg',
+            src: 'pundix_npxs2.svg',
             sizes: '32x32',
             type: 'image/svg',
             purpose: 'any maskable',

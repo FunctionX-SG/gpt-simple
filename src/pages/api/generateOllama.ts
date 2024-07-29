@@ -4,9 +4,10 @@ import { ProxyAgent, fetch } from 'undici'
 import { generateOllamaPayload, parseOllamaStream } from '@/utils/ollama';
 import { verifySignature } from '@/utils/auth';
 import type { APIRoute } from 'astro';
+import { REMOTE_URL, LOCAL_URL } from '@/constants/constants';
 
 const httpsProxy = import.meta.env.HTTPS_PROXY;
-const baseUrl = "http://47.90.209.195:11434";
+const baseUrl = LOCAL_URL;
 const sitePassword = import.meta.env.SITE_PASSWORD || ''
 const passList = sitePassword.split(',') || []
 

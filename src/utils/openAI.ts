@@ -47,7 +47,6 @@ export const parseOpenAIStream = (rawResponse: Response) => {
     async start(controller) {
       const streamParser = (event: ParsedEvent | ReconnectInterval) => {
         if (event.type === 'event') {
-          console.log(event)
           const data = event.data
           if (data === '[DONE]') {
             controller.close()
@@ -66,8 +65,6 @@ export const parseOpenAIStream = (rawResponse: Response) => {
             const json = JSON.parse(data)
             const text = json.choices[0].delta?.content || ''
             const queue = encoder.encode(text)
-            console.log("OpenAI queue")
-            console.log(queue)
             controller.enqueue(queue)
           } catch (e) {
             controller.error(e)
@@ -76,8 +73,10 @@ export const parseOpenAIStream = (rawResponse: Response) => {
       }
 
       const parser = createParser(streamParser)
-      for await (const chunk of rawResponse.body as any)
-        parser.feed(decoder.decode(chunk))
+      for await (const chunk of rawResponse.body as any) {
+        const decodedChunk = decoder.decode(chunk);
+        parser.feed(decodedChunk);
+      }
     },
   })
 

@@ -2,7 +2,7 @@ import { createParser } from 'eventsource-parser';
 import type { ParsedEvent, ReconnectInterval } from 'eventsource-parser';
 import type { ChatMessage } from '@/types';
 
-export const model = "llama3";
+export const model = "llama3.1";
 
 export const generateOllamaPayload = (
     messages: ChatMessage[],
@@ -19,7 +19,7 @@ export const generateOllamaPayload = (
             options: {
                 temperature,
             },
-            stream: true
+            stream: true,
         })
     };
 }
@@ -46,17 +46,16 @@ export const parseOllamaStream = (rawResponse: Response) => {
     const stream = new ReadableStream({
         async start(controller) {
             for await (const chunk of rawResponse.body as any) {
-                const decodedChunk = decoder.decode(chunk, {stream: true});
-                console.log("Chunk received:", decodedChunk)
+                const decodedChunk = decoder.decode(chunk);
                 try {
                     const json = JSON.parse(decodedChunk);
-                    console.log("json:", json);
+                    // console.log("json:", json);
                     const text = json.message?.content || '';
-                    console.log("text:", text);
+                    // console.log("text:", text);
                     const queue = encoder.encode(text);
                     controller.enqueue(queue);
                     if (json.done) {
-                        console.log("closing ollama")
+                        // console.log("closing ollama")
                         controller.close();
                         return;
                     }
