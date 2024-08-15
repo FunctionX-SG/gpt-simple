@@ -254,7 +254,7 @@ export default () => {
         when={!loading()}
         fallback={
           <div class="gen-cb-wrapper">
-            <span>AI is thinking...</span>
+            <span>AIMeow is thinking...</span>
             {/* <div class="gen-cb-stop" onClick={stopStreamFetch}>Stop</div> */}
           </div>
         }
@@ -280,15 +280,22 @@ export default () => {
           <button title="Clear" onClick={clear} disabled={systemRoleEditing()} gen-slate-btn>
             <IconClear />
           </button>
+          <div class="rounded-md hover:bg-slate/10 w-fit h-fit transition-colors active:scale-90" class:stick-btn-on={isStick()}>
+            <div>
+              <button class="p-3.8 text-base" title="stick to bottom" type="button" onClick={() => setStick(!isStick())}>
+                <div i-ph-arrow-line-down-bold />
+              </button>
+            </div>
+          </div>
         </div>
       </Show>
-      <div class="fixed bottom-5 left-5 rounded-md hover:bg-slate/10 w-fit h-fit transition-colors active:scale-90" class:stick-btn-on={isStick()}>
+      {/* <div class="fixed bottom-5 left-5 rounded-md hover:bg-slate/10 w-fit h-fit transition-colors active:scale-90" class:stick-btn-on={isStick()}>
         <div>
           <button class="p-2.5 text-base" title="stick to bottom" type="button" onClick={() => setStick(!isStick())}>
             <div i-ph-arrow-line-down-bold />
           </button>
         </div>
-      </div>
+      </div> */}
     </div>
   )
 }
