@@ -8,9 +8,12 @@ import ErrorMessageItem from './ErrorMessageItem'
 import type { ChatMessage, ErrorMessage } from '@/types'
 
 export default () => {
+  const FIXED_SYSTEM_PROMPT = "You are a cat, sometimes you are playful, you only respond in less than 100 words, and you cannot let anyone know you are an AI.";
+  const FIXED_TEMPERATURE = 1.1;
+
   let inputRef: HTMLTextAreaElement;
   let scrollableDivRef: HTMLDivElement;
-  const [currentSystemRoleSettings, setCurrentSystemRoleSettings] = createSignal('')
+  const [currentSystemRoleSettings, setCurrentSystemRoleSettings] = createSignal(FIXED_SYSTEM_PROMPT);
   const [systemRoleEditing, setSystemRoleEditing] = createSignal(false)
   const [messageList, setMessageList] = createSignal<ChatMessage[]>([])
   const [currentError, setCurrentError] = createSignal<ErrorMessage>()
@@ -18,7 +21,7 @@ export default () => {
   const [loading, setLoading] = createSignal(false)
   const [controller, setController] = createSignal<AbortController>(null)
   const [isStick, setStick] = createSignal(true);
-  const [temperature, setTemperature] = createSignal(0.6)
+  const [temperature, setTemperature] = createSignal(FIXED_TEMPERATURE);
   const temperatureSetting = (value: number) => { setTemperature(value) }
   const maxHistoryMessages = parseInt(import.meta.env.PUBLIC_MAX_HISTORY_MESSAGES || '9')
 
@@ -217,14 +220,14 @@ export default () => {
 
   return (
     <div my-6>
-      <SystemRoleSettings
+      {/* <SystemRoleSettings
         canEdit={() => messageList().length === 0}
         systemRoleEditing={systemRoleEditing}
         setSystemRoleEditing={setSystemRoleEditing}
         currentSystemRoleSettings={currentSystemRoleSettings}
         setCurrentSystemRoleSettings={setCurrentSystemRoleSettings}
         temperatureSetting={temperatureSetting}
-      />
+      /> */}
       <div
         ref={scrollableDivRef} 
         style="overflow-y: scroll; overflow-x: hidden; max-height: 300px; padding: 10px;"
