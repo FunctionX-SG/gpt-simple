@@ -70,6 +70,7 @@ export const parseOllamaStream = (rawResponse: Response) => {
                     }
 
                     // if syntax error, wait for more chunks. I.e. do nothing.
+                    // An error may be thrown here if the app is reloaded without refreshing the page
                 }
             }
             //handle any remaining buffer content that didnt parse
