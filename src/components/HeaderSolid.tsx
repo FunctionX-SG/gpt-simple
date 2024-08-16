@@ -48,8 +48,8 @@ export default () => {
                 
             </div>
             <div class="fi mt-5">
-                <span class="gpt-title">LLaMA3.1-Chat</span>
-                <span class="gpt-subtitle" style={{ "font-family": "Poppins"}}>Demo</span>
+                <span class="gpt-title" >LLaMA3.1-Chat</span>
+                <span class="gpt-subtitle">Demo</span>
             </div>
         </header>
     )

@@ -259,12 +259,12 @@ export default () => {
           </div>
         }
       >
-        <div class="gen-text-wrapper" class:op-50={systemRoleEditing()}>
+        <div class="gen-text-wrapper poppins-font" class:op-50={systemRoleEditing()}>
           <textarea
             ref={inputRef!}
             disabled={systemRoleEditing()}
             onKeyDown={handleKeydown}
-            placeholder="Enter a prompt"
+            placeholder="Start chatting with AIMeow!"
             autocomplete="off"
             autofocus
             onInput={() => {
@@ -274,13 +274,13 @@ export default () => {
             rows="1"
             class="gen-textarea"
           />
-          <button onClick={handleButtonClick} disabled={systemRoleEditing()} gen-slate-btn>
+          <button onClick={handleButtonClick} disabled={systemRoleEditing()} class="gradient-button">
             Send
           </button>
-          <button title="Clear" onClick={clear} disabled={systemRoleEditing()} gen-slate-btn>
+          <button title="Clear" onClick={clear} disabled={systemRoleEditing()} class="gradient-button">
             <IconClear />
           </button>
-          <div class="rounded-md hover:bg-slate/10 w-fit h-fit transition-colors active:scale-90" class:stick-btn-on={isStick()}>
+          <div class="rounded-md hover:bg-slate/10 w-fit h-fit transition-colors active:scale-90" class:gradient-button2={isStick()}>
             <div>
               <button class="p-3.8 text-base" title="stick to bottom" type="button" onClick={() => setStick(!isStick())}>
                 <div i-ph-arrow-line-down-bold />
@@ -289,13 +289,6 @@ export default () => {
           </div>
         </div>
       </Show>
-      {/* <div class="fixed bottom-5 left-5 rounded-md hover:bg-slate/10 w-fit h-fit transition-colors active:scale-90" class:stick-btn-on={isStick()}>
-        <div>
-          <button class="p-2.5 text-base" title="stick to bottom" type="button" onClick={() => setStick(!isStick())}>
-            <div i-ph-arrow-line-down-bold />
-          </button>
-        </div>
-      </div> */}
     </div>
   )
 }
