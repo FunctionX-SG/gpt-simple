@@ -43,13 +43,13 @@ export default () => {
 
                 {theme() === "dark" ? 
                     (<img src={AiMeowLogo} alt="ChatGPT" class="logo" />)
-                    : (<img src={lightLogo} alt="ChatGPT" class="logo" />)
+                    : (<img src={AiMeowLogo} alt="ChatGPT" class="logo" />)
                 }
                 
             </div>
             <div class="fi mt-5">
-                <span class="gpt-title" >LLaMA3.1-Chat</span>
-                <span class="gpt-subtitle">Demo</span>
+                <span class="gpt-title poppins-font" >LLaMA3.1-Chat</span>
+                <span class="gpt-title poppins-font">Demo</span>
             </div>
         </header>
     )
