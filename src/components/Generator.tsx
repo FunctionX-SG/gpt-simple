@@ -132,6 +132,7 @@ export default () => {
       });
       if (!response.ok) {
         const error = await response.json()
+        console.log("line 135");
         console.error(error.error)
         setCurrentError(error.error)
         throw new Error('Request failed')
@@ -156,6 +157,7 @@ export default () => {
         done = readerDone;
       }
     } catch (e) {
+      console.log("line 160");
       console.error(e)
       setLoading(false)
       setController(null)
@@ -230,7 +232,7 @@ export default () => {
       /> */}
       <div
         ref={scrollableDivRef} 
-        style="overflow-y: scroll; overflow-x: hidden; max-height: 300px; padding: 10px;"
+        style="overflow-y: scroll; overflow-x: hidden; max-height: 45vh; padding: 15px;"
       >
       <Index each={messageList()}>
         {(message, index) => (

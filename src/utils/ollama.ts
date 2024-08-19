@@ -71,6 +71,7 @@ export const parseOllamaStream = (rawResponse: Response) => {
 
                     // if syntax error, wait for more chunks. I.e. do nothing.
                     // An error may be thrown here if the app is reloaded without refreshing the page
+                    console.log("line 74");
                 }
             }
             //handle any remaining buffer content that didnt parse
@@ -81,6 +82,7 @@ export const parseOllamaStream = (rawResponse: Response) => {
                     const queue = encoder.encode(text);
                     controller.enqueue(queue);
                 } catch (e) {
+                    console.log("line 85");
                     console.error("Error parsing remaining buffer: ", buffer);
                     controller.error(e);
                 }
