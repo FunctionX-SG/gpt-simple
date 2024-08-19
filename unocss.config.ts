@@ -9,6 +9,7 @@ import {
 } from 'unocss'
 
 export default defineConfig({
+  safelist: ['chat-window'],
   presets: [
     presetUno(),
     presetAttributify(),
