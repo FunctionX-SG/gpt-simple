@@ -53,6 +53,7 @@ export const post: APIRoute = async (context) => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
     const response = await fetch(`${baseUrl}/api/chat`, initOptions).catch((err: Error) => {
+        console.log("line 56");
         console.error(err);
         return new Response(JSON.stringify({
             error: {
