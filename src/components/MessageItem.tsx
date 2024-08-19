@@ -74,7 +74,7 @@ export default ({ role, message, showRetry, onRetry }: Props) => {
         class={`flex gap-3 rounded-lg ${role === 'user' ? 'flex-row-reverse text-right' : 'flex-row'} `}
         class:op-75={role === 'user'}>
         {role === 'assistant' ? (
-          <img src="/src/components/logos/AIMEW_ver1.png" alt="AI Logo" class="shrink-0 w-7 h-7 mt-4 rounded-full" />
+          <img src="/AIMEW_ver1.png" alt="AI Logo" class="shrink-0 w-7 h-7 mt-4 rounded-full" />
         ) : (
           <div class={`shrink-0 w-7 h-7 mt-4 rounded-full op-80 ${roleClass[role]}`} />
         )}

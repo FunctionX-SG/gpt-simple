@@ -79,11 +79,15 @@ export default () => {
   }
 
   const smoothToBottom = () => {
-    scrollableDivRef.scrollTo({ top: scrollableDivRef.scrollHeight, behavior: 'smooth' })
+    if (scrollableDivRef) {
+      scrollableDivRef.scrollTo({ top: scrollableDivRef.scrollHeight, behavior: 'smooth' })
+    }
   }
 
   const instantToBottom = () => {
-    scrollableDivRef.scrollTo({ top: scrollableDivRef.scrollHeight, behavior: 'instant' })
+    if (scrollableDivRef) {
+      scrollableDivRef.scrollTo({ top: scrollableDivRef.scrollHeight, behavior: 'instant' })
+    }
   }
 
   createEffect(() => {
