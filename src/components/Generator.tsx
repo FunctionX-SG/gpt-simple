@@ -26,6 +26,11 @@ export default () => {
   const maxHistoryMessages = parseInt(import.meta.env.PUBLIC_MAX_HISTORY_MESSAGES || '9')
 
   // createEffect(() => (isStick() && smoothToBottom()))
+  const handleBeforeUnload = () => {
+    sessionStorage.setItem('messageList', JSON.stringify(messageList()))
+    sessionStorage.setItem('systemRoleSettings', currentSystemRoleSettings())
+    isStick() ? localStorage.setItem('stickToBottom', 'stick') : localStorage.removeItem('stickToBottom')
+  }
 
   onMount(() => {
     let lastPostion = window.scrollY
@@ -54,12 +59,6 @@ export default () => {
       window.removeEventListener('beforeunload', handleBeforeUnload)
     })
   })
-
-  const handleBeforeUnload = () => {
-    sessionStorage.setItem('messageList', JSON.stringify(messageList()))
-    sessionStorage.setItem('systemRoleSettings', currentSystemRoleSettings())
-    isStick() ? localStorage.setItem('stickToBottom', 'stick') : localStorage.removeItem('stickToBottom')
-  }
 
   const handleButtonClick = async() => {
     const inputValue = inputRef.value
