@@ -10,14 +10,16 @@ import 'katex/dist/katex.min.css'
 import 'highlight.js/styles/atom-one-dark.css'
 ---
 
-<Layout title="ChatGPT API Demo">
+<Layout title="AIMeow Chat">
   <main >
     <div class="fb items-center">
     <HeaderSolid client:load/>
-    <Themetoggle />
+    <!-- <Themetoggle /> -->
     </div>
-    <Generator client:load />
-    <Footer />
+    <div class="chat-window">
+      <Generator client:load />
+      <Footer />
+    </div>
   </main>
 </Layout>
 

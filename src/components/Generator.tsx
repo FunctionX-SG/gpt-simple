@@ -8,20 +8,24 @@ import ErrorMessageItem from './ErrorMessageItem'
 import type { ChatMessage, ErrorMessage } from '@/types'
 
 export default () => {
-  let inputRef: HTMLTextAreaElement
-  const [currentSystemRoleSettings, setCurrentSystemRoleSettings] = createSignal('')
+  const FIXED_SYSTEM_PROMPT = "You are a cat, sometimes you are playful, you only respond in less than 100 words, and you cannot let anyone know you are an AI.";
+  const FIXED_TEMPERATURE = 1.1;
+
+  let inputRef: HTMLTextAreaElement;
+  let scrollableDivRef: HTMLDivElement;
+  const [currentSystemRoleSettings, setCurrentSystemRoleSettings] = createSignal(FIXED_SYSTEM_PROMPT);
   const [systemRoleEditing, setSystemRoleEditing] = createSignal(false)
   const [messageList, setMessageList] = createSignal<ChatMessage[]>([])
   const [currentError, setCurrentError] = createSignal<ErrorMessage>()
   const [currentAssistantMessage, setCurrentAssistantMessage] = createSignal('')
   const [loading, setLoading] = createSignal(false)
   const [controller, setController] = createSignal<AbortController>(null)
-  const [isStick, setStick] = createSignal(false)
-  const [temperature, setTemperature] = createSignal(0.6)
+  const [isStick, setStick] = createSignal(true);
+  const [temperature, setTemperature] = createSignal(FIXED_TEMPERATURE);
   const temperatureSetting = (value: number) => { setTemperature(value) }
   const maxHistoryMessages = parseInt(import.meta.env.PUBLIC_MAX_HISTORY_MESSAGES || '9')
 
-  createEffect(() => (isStick() && smoothToBottom()))
+  // createEffect(() => (isStick() && smoothToBottom()))
 
   onMount(() => {
     let lastPostion = window.scrollY
@@ -75,82 +79,23 @@ export default () => {
     instantToBottom()
   }
 
-  const smoothToBottom = useThrottleFn(() => {
-    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
-  }, 300, false, true)
+  const smoothToBottom = () => {
+    scrollableDivRef.scrollTo({ top: scrollableDivRef.scrollHeight, behavior: 'smooth' })
+  }
 
   const instantToBottom = () => {
-    window.scrollTo({ top: document.body.scrollHeight, behavior: 'instant' })
+    scrollableDivRef.scrollTo({ top: scrollableDivRef.scrollHeight, behavior: 'instant' })
   }
-  
-  /// Request to OpenAI
-  const requestWithLatestMessage = async() => {
-    setLoading(true)
-    setCurrentAssistantMessage('')
-    setCurrentError(null)
-    const storagePassword = localStorage.getItem('pass')
-    try {
-      const controller = new AbortController()
-      setController(controller)
-      const requestMessageList = messageList().slice(-maxHistoryMessages)
-      if (currentSystemRoleSettings()) {
-        requestMessageList.unshift({
-          role: 'system',
-          content: currentSystemRoleSettings(),
-        })
-      }
-      const timestamp = Date.now()
-      const response = await fetch('/api/generate', {
-        method: 'POST',
-        body: JSON.stringify({
-          messages: requestMessageList,
-          time: timestamp,
-          pass: storagePassword,
-          sign: await generateSignature({
-            t: timestamp,
-            m: requestMessageList?.[requestMessageList.length - 1]?.content || '',
-          }),
-          temperature: temperature(),
-        }),
-        signal: controller.signal,
-      })
-      if (!response.ok) {
-        const error = await response.json()
-        console.error(error.error)
-        setCurrentError(error.error)
-        throw new Error('Request failed')
-      }
-      const data = response.body
-      if (!data)
-        throw new Error('No data')
 
-      const reader = data.getReader()
-      const decoder = new TextDecoder('utf-8')
-      let done = false
+  createEffect(() => {
+    if (isStick()) smoothToBottom()
+  })
 
-      while (!done) {
-        const { value, done: readerDone } = await reader.read()
-        if (value) {
-          const char = decoder.decode(value)
-          if (char === '\n' && currentAssistantMessage().endsWith('\n'))
-            continue
-
-          if (char)
-            setCurrentAssistantMessage(currentAssistantMessage() + char)
-
-          isStick() && instantToBottom()
-        }
-        done = readerDone
-      }
-    } catch (e) {
-      console.error(e)
-      setLoading(false)
-      setController(null)
-      return
+  createEffect(() => {
+    if (messageList().length > 0 || currentAssistantMessage()) {
+      instantToBottom()
     }
-    archiveCurrentMessage()
-    isStick() && instantToBottom()
-  }
+  })
 
   /// Request to Ollama (Llama-cpp)
   const requestWithLatestMessageOllama = async () => {
@@ -187,6 +132,7 @@ export default () => {
       });
       if (!response.ok) {
         const error = await response.json()
+        console.log("line 135");
         console.error(error.error)
         setCurrentError(error.error)
         throw new Error('Request failed')
@@ -211,6 +157,7 @@ export default () => {
         done = readerDone;
       }
     } catch (e) {
+      console.log("line 160");
       console.error(e)
       setLoading(false)
       setController(null)
@@ -275,14 +222,18 @@ export default () => {
 
   return (
     <div my-6>
-      <SystemRoleSettings
+      {/* <SystemRoleSettings
         canEdit={() => messageList().length === 0}
         systemRoleEditing={systemRoleEditing}
         setSystemRoleEditing={setSystemRoleEditing}
         currentSystemRoleSettings={currentSystemRoleSettings}
         setCurrentSystemRoleSettings={setCurrentSystemRoleSettings}
         temperatureSetting={temperatureSetting}
-      />
+      /> */}
+      <div
+        ref={scrollableDivRef} 
+        style="overflow-y: scroll; overflow-x: hidden; max-height: 45vh; padding: 15px;"
+      >
       <Index each={messageList()}>
         {(message, index) => (
           <MessageItem
@@ -300,21 +251,22 @@ export default () => {
         />
       )}
       { currentError() && <ErrorMessageItem data={currentError()} onRetry={retryLastFetch} /> }
+      </div>
       <Show
         when={!loading()}
         fallback={
           <div class="gen-cb-wrapper">
-            <span>AI is thinking...</span>
+            <span>AIMeow is thinking...</span>
             {/* <div class="gen-cb-stop" onClick={stopStreamFetch}>Stop</div> */}
           </div>
         }
       >
-        <div class="gen-text-wrapper" class:op-50={systemRoleEditing()}>
+        <div class="gen-text-wrapper poppins-font" class:op-50={systemRoleEditing()}>
           <textarea
             ref={inputRef!}
             disabled={systemRoleEditing()}
             onKeyDown={handleKeydown}
-            placeholder="Enter a prompt"
+            placeholder="Start chatting with AIMeow!"
             autocomplete="off"
             autofocus
             onInput={() => {
@@ -324,21 +276,93 @@ export default () => {
             rows="1"
             class="gen-textarea"
           />
-          <button onClick={handleButtonClick} disabled={systemRoleEditing()} gen-slate-btn>
+          <button onClick={handleButtonClick} disabled={systemRoleEditing()} class="gradient-button">
             Send
           </button>
-          <button title="Clear" onClick={clear} disabled={systemRoleEditing()} gen-slate-btn>
+          <button title="Clear" onClick={clear} disabled={systemRoleEditing()} class="gradient-button">
             <IconClear />
           </button>
+          <div class="rounded-md hover:bg-slate/10 w-fit h-fit transition-colors active:scale-90" class:gradient-button2={isStick()}>
+            <div>
+              <button class="p-3.8 text-base" title="stick to bottom" type="button" onClick={() => setStick(!isStick())}>
+                <div i-ph-arrow-line-down-bold />
+              </button>
+            </div>
+          </div>
         </div>
       </Show>
-      <div class="fixed bottom-5 left-5 rounded-md hover:bg-slate/10 w-fit h-fit transition-colors active:scale-90" class:stick-btn-on={isStick()}>
-        <div>
-          <button class="p-2.5 text-base" title="stick to bottom" type="button" onClick={() => setStick(!isStick())}>
-            <div i-ph-arrow-line-down-bold />
-          </button>
-        </div>
-      </div>
     </div>
   )
 }
+
+/********************************************************/
+/*             For reference, DO NOT DELETE             */
+/********************************************************/
+  // /// Request to OpenAI
+  // const requestWithLatestMessage = async() => {
+  //   setLoading(true)
+  //   setCurrentAssistantMessage('')
+  //   setCurrentError(null)
+  //   const storagePassword = localStorage.getItem('pass')
+  //   try {
+  //     const controller = new AbortController()
+  //     setController(controller)
+  //     const requestMessageList = messageList().slice(-maxHistoryMessages)
+  //     if (currentSystemRoleSettings()) {
+  //       requestMessageList.unshift({
+  //         role: 'system',
+  //         content: currentSystemRoleSettings(),
+  //       })
+  //     }
+  //     const timestamp = Date.now()
+  //     const response = await fetch('/api/generate', {
+  //       method: 'POST',
+  //       body: JSON.stringify({
+  //         messages: requestMessageList,
+  //         time: timestamp,
+  //         pass: storagePassword,
+  //         sign: await generateSignature({
+  //           t: timestamp,
+  //           m: requestMessageList?.[requestMessageList.length - 1]?.content || '',
+  //         }),
+  //         temperature: temperature(),
+  //       }),
+  //       signal: controller.signal,
+  //     })
+  //     if (!response.ok) {
+  //       const error = await response.json()
+  //       console.error(error.error)
+  //       setCurrentError(error.error)
+  //       throw new Error('Request failed')
+  //     }
+  //     const data = response.body
+  //     if (!data)
+  //       throw new Error('No data')
+
+  //     const reader = data.getReader()
+  //     const decoder = new TextDecoder('utf-8')
+  //     let done = false
+
+  //     while (!done) {
+  //       const { value, done: readerDone } = await reader.read()
+  //       if (value) {
+  //         const char = decoder.decode(value)
+  //         if (char === '\n' && currentAssistantMessage().endsWith('\n'))
+  //           continue
+
+  //         if (char)
+  //           setCurrentAssistantMessage(currentAssistantMessage() + char)
+
+  //         isStick() && instantToBottom()
+  //       }
+  //       done = readerDone
+  //     }
+  //   } catch (e) {
+  //     console.error(e)
+  //     setLoading(false)
+  //     setController(null)
+  //     return
+  //   }
+  //   archiveCurrentMessage()
+  //   isStick() && instantToBottom()
+  // }

@@ -42,7 +42,7 @@ export default defineConfig({
             type: 'image/png',
           },
           {
-            src: 'pundix_npxs2.svg',
+            src: 'Chat_Head.svg',
             sizes: '32x32',
             type: 'image/svg',
             purpose: 'any maskable',

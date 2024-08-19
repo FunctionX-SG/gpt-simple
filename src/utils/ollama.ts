@@ -43,23 +43,47 @@ export const parseOllamaStream = (rawResponse: Response) => {
     }
     const encoder = new TextEncoder();
     const decoder = new TextDecoder();
+
+    let buffer = '';
+
     const stream = new ReadableStream({
         async start(controller) {
             for await (const chunk of rawResponse.body as any) {
                 const decodedChunk = decoder.decode(chunk);
+                buffer += decodedChunk;
                 try {
-                    const json = JSON.parse(decodedChunk);
-                    // console.log("json:", json);
+                    // Attempt to parse buffered data
+                    const json = JSON.parse(buffer);
                     const text = json.message?.content || '';
-                    // console.log("text:", text);
                     const queue = encoder.encode(text);
                     controller.enqueue(queue);
                     if (json.done) {
-                        // console.log("closing ollama")
                         controller.close();
                         return;
                     }
+                    // Clear buffer after successful parse
+                    buffer = '';
                 } catch (e) {
+                    if (!(e instanceof SyntaxError)) {
+                        console.info("Non-syntax error");
+                        controller.error(e);
+                    }
+
+                    // if syntax error, wait for more chunks. I.e. do nothing.
+                    // An error may be thrown here if the app is reloaded without refreshing the page
+                    console.log("line 74");
+                }
+            }
+            //handle any remaining buffer content that didnt parse
+            if (buffer) {
+                try {
+                    const json = JSON.parse(buffer);
+                    const text = json.message?.content || '';
+                    const queue = encoder.encode(text);
+                    controller.enqueue(queue);
+                } catch (e) {
+                    console.log("line 85");
+                    console.error("Error parsing remaining buffer: ", buffer);
                     controller.error(e);
                 }
             }
