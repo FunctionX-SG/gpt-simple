@@ -78,7 +78,7 @@ export default ({ role, message, showRetry, onRetry }: Props) => {
         ) : (
           <div class={`shrink-0 w-7 h-7 mt-4 rounded-full op-80 ${roleClass[role]}`} />
         )}
-        <div class="message prose break-words overflow-hidden" innerHTML={htmlString()} />
+        <div class="message prose break-words overflow-hidden poppins-font" innerHTML={htmlString()} />
       </div>
       {showRetry?.() && onRetry && (
         <div class="fie px-3 mb-2">
