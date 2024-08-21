@@ -25,19 +25,19 @@ export default defineConfig({
       registerType: 'autoUpdate',
       injectRegister: 'inline',
       manifest: {
-        name: 'ChatGPT-API Demo',
-        short_name: 'ChatGPT Demo',
-        description: 'A demo repo based on OpenAI API',
+        name: 'AIMeow Chat Demo',
+        short_name: 'AIMeow Chat',
+        description: 'A repo for AIMeow Chat',
         theme_color: '#212129',
         background_color: '#ffffff',
         icons: [
           {
-            src: 'pwa-192.png',
+            src: 'Chat_Head.png',
             sizes: '192x192',
             type: 'image/png',
           },
           {
-            src: 'pwa-512.png',
+            src: 'Chat_Head.png',
             sizes: '512x512',
             type: 'image/png',
           },
