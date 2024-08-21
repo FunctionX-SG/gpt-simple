@@ -47,9 +47,9 @@ export default () => {
                 }
                 
             </div>
-            <div class="fi mt-5">
-                <span class="gpt-title poppins-font" >LLaMA3.1-Chat</span>
-                <span class="gpt-title poppins-font">Demo</span>
+            <div class="fi mt-5 mb-5" style="background: #000000 0% 0% no-repeat padding-box; border: 1px solid #707070; border-radius: 9px; opacity: 0.52; padding-bottom:">
+                <span style="margin-left: 40px; margin-right: 40px" class="gpt-title poppins-font" >LLaMA3.1-Chat Demo</span>
+                {/* <span class="gpt-title poppins-font">Demo</span> */}
             </div>
         </header>
     )
